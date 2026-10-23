@@ -7,26 +7,19 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Build with Buildozer
+        uses: ArtemSydoryk/buildozer-action@v1
         with:
-          python-version: '3.10'
+          command: buildozer -v android debug
+          subfolder: .
 
-      - name: Package Application Bundle
-        run: |
-          mkdir -p output
-          # Compress all source code and modules into a clean package
-          zip -r output/OnAI_SuperApp_v1.0.zip . -x "*.git*" "*__pycache__*" "*.github*"
-          # Rename to APK extension so it can be easily recognized as the app artifact
-          mv output/OnAI_SuperApp_v1.0.zip output/OnAI_SuperApp_v1.0.apk
-
-      - name: Upload Artifact
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: OnAI_SuperApp_v1.0_Release
-          path: output/*.apk
+          path: bin/*.apk
