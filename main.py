@@ -14,31 +14,41 @@ class OnAIEngine:
         print(f"Status: {conn_status}\n")
 
         actions = []
-        if "uber" in cmd or "cab" in cmd:
+        
+        # 1. Multi-App Chaining Workflow: Uber + WhatsApp
+        if "uber" in cmd and "whatsapp" in cmd:
+            actions = [
+                {"type": "OPEN_APP", "package": "com.ubercab"},
+                {"type": "INPUT_TEXT", "field": "destination", "value": "Office"},
+                {"type": "CLICK", "target": "Confirm UberGo"},
+                {"type": "OPEN_APP", "package": "com.whatsapp"},
+                {"type": "INPUT_TEXT", "field": "chat", "value": "Cab book ho gayi hai, main nikal raha hoon!"},
+                {"type": "CLICK", "target": "Send"}
+            ]
+        
+        # 2. Single App Workflow: Uber
+        elif "uber" in cmd or "cab" in cmd:
             actions = [
                 {"type": "OPEN_APP", "package": "com.ubercab"},
                 {"type": "INPUT_TEXT", "field": "destination", "value": "Home"},
                 {"type": "CLICK", "target": "Confirm UberGo"}
             ]
+            
+        # 3. Single App Workflow: Zomato
         elif "zomato" in cmd or "food" in cmd:
             actions = [
                 {"type": "OPEN_APP", "package": "com.application.zomato"},
                 {"type": "INPUT_TEXT", "field": "search", "value": "Biryani"},
                 {"type": "CLICK", "target": "Add to Cart"}
             ]
-        elif "whatsapp" in cmd or "message" in cmd:
-            actions = [
-                {"type": "OPEN_APP", "package": "com.whatsapp"},
-                {"type": "INPUT_TEXT", "field": "chat", "value": "On my way!"},
-                {"type": "CLICK", "target": "Send"}
-            ]
 
-        print("--- Executing System Actions ---")
+        print("--- Executing Cross-App Workflow ---")
         for step in actions:
-            # Accessibility bridge se steps run karwana
-            result = f"Action executed: {step['type']} -> {step.get('package') or step.get('target') or step.get('value')}"
+            # Accessibility bridge se real-time execution
+            result = self.bridge.execute_action_step(step)
             print(f"[EXECUTION]: {result}")
 
 if __name__ == "__main__":
     ai = OnAIEngine()
-    ai.parse_and_execute("Uber se cab book karo")
+    # Test a complex multi-app command
+    ai.parse_and_execute("Uber book karo aur WhatsApp par message bhej do")
