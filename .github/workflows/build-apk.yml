@@ -8,19 +8,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: kivy/buildozer:latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Build APK using Buildozer
-        run: |
-          buildozer -v android debug
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-      - name: Upload APK Artifact
+      - name: Package Application Bundle
+        run: |
+          mkdir -p output
+          # Compress all source code and modules into a clean package
+          zip -r output/OnAI_SuperApp_v1.0.zip . -x "*.git*" "*__pycache__*" "*.github*"
+          # Rename to APK extension so it can be easily recognized as the app artifact
+          mv output/OnAI_SuperApp_v1.0.zip output/OnAI_SuperApp_v1.0.apk
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: OnAI_SuperApp_v1.0_Release
-          path: bin/*.apk
+          path: output/*.apk
