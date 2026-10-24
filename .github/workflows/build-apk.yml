@@ -1,4 +1,4 @@
-name: Build Play Store AAB
+name: Build On AI APK
 
 on:
   push:
@@ -24,12 +24,12 @@ jobs:
           pip install --upgrade pip setuptools
           pip install buildozer cython==0.29.33
 
-      - name: Build AAB with Buildozer
+      - name: Build Debug APK with Buildozer
         run: |
-          yes | buildozer -v android release
+          yes | buildozer -v android debug
 
-      - name: Upload Play Store AAB Bundle
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: OnAI_SuperApp_PlayStore_Bundle
-          path: bin/*.aab
+          name: OnAI_SuperApp_Debug
+          path: bin/*.apk
