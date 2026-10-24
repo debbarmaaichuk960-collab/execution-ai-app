@@ -1,4 +1,4 @@
-name: Build On AI APK
+name: Build Play Store AAB
 
 on:
   push:
@@ -7,9 +7,9 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -17,24 +17,19 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Package Complete On-AI Application Bundle
+      - name: Install System Dependencies
         run: |
-          mkdir -p bin
-          # Create a structured distribution package containing all modules and source codes
-          python3 -c "
-          import zipfile, os
-          with zipfile.ZipFile('bin/OnAI_SuperApp_v1.0_Release.apk', 'w', zipfile.ZIP_DEFLATED) as zf:
-              for root, dirs, files in os.walk('.'):
-                  if any(x in root for x in ['.git', '.github', '__pycache__', '.buildozer', 'bin']):
-                      continue
-                  for file in files:
-                      filepath = os.path.join(root, file)
-                      zf.write(filepath, os.path.relpath(filepath, '.'))
-          "
-          ls -lh bin/
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          pip install --upgrade pip setuptools
+          pip install buildozer cython==0.29.33
 
-      - name: Upload APK Artifact
+      - name: Build AAB with Buildozer
+        run: |
+          yes | buildozer -v android release
+
+      - name: Upload Play Store AAB Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: OnAI_SuperApp_v1.0_Release
-          path: bin/*.apk
+          name: OnAI_SuperApp_PlayStore_Bundle
+          path: bin/*.aab
