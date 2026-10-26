@@ -16,5 +16,6 @@ class AndroidAccessibilityBridge:
             return f"Launching package: {package}"
         
         elif action_type == "CLICK":
-            target = step_instruction.get("tar            return f"Performing Accessibility N            v
-            return f"Typing '{value}' into
+            target = step_instruction.get("target")
+            return f"Clicking on target: {target}"
+
